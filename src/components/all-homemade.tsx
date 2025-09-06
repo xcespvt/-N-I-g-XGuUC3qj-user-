@@ -11,6 +11,7 @@ import { LiveItUpCard } from './live-it-up-card';
 import React from 'react';
 import { HighProteinAdCard } from './high-protein-ad-card';
 import { FilterSheet } from './filter-sheet';
+import { TaglineBanner } from './tagline-banner';
 
 type AllHomemadeProps = {
   restaurants: Restaurant[];
@@ -35,7 +36,7 @@ export function AllHomemade({ restaurants, favorites, onFavoriteToggle, offers, 
   return (
     <section>
       <div className="mb-4">
-        <div className="flex items-center gap-2 overflow-x-auto pb-2">
+        <div className="flex items-center gap-2 overflow-x-auto pb-2 no-scrollbar">
             <Button variant="outline" className="rounded-full bg-white border-gray-300 shrink-0" onClick={() => setIsFilterSheetOpen(true)}>
                 <ListFilter className="mr-2 h-4 w-4" />
                 Filter
@@ -83,6 +84,8 @@ export function AllHomemade({ restaurants, favorites, onFavoriteToggle, offers, 
             </Button>
         </div>
       </div>
+
+      <TaglineBanner />
 
       <h2 className="text-xl font-bold mb-4">{`Top ${homemadeRestaurants.length} homemade kitchens to explore`}</h2>
       

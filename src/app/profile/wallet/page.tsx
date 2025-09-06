@@ -2,7 +2,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { ChevronLeft, Wallet, Gift, ShoppingBag, Plus, X, Loader2, CheckCircle2, XCircle, ArrowDownLeft, ArrowUpRight } from 'lucide-react';
+import { ChevronLeft, Wallet, Gift, ShoppingBag, Plus, X, Loader2, CheckCircle2, XCircle, ArrowDownLeft, ArrowUpRight, RefreshCw, Sparkles, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { useState } from 'react';
@@ -10,41 +10,9 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
+import { transactions as mockTransactions } from '@/lib/mock-data';
 
-const transactions = [
-  {
-    id: 1,
-    type: 'credit',
-    title: 'Cashback from Royal Spice',
-    description: 'Order #12345',
-    amount: 50,
-    date: '2024-08-15',
-  },
-  {
-    id: 2,
-    type: 'credit',
-    title: 'Welcome Bonus',
-    description: 'First order offer',
-    amount: 100,
-    date: '2024-08-12',
-  },
-   {
-    id: 3,
-    type: 'debit',
-    title: 'Paid for Order #12301',
-    description: 'Burger Barn',
-    amount: -75,
-    date: '2024-08-11',
-  },
-  {
-    id: 4,
-    type: 'credit',
-    title: 'Cashback from Pizza Heaven',
-    description: 'Order #12300',
-    amount: 75,
-    date: '2024-08-10',
-  },
-];
+const transactions = mockTransactions;
 
 const TransactionIcon = ({ type }: { type: 'credit' | 'debit' }) => {
     if (type === 'credit') {
@@ -60,16 +28,31 @@ const TransactionRow = ({ transaction, index }: { transaction: typeof transactio
             <div>
                 <p className="font-bold text-gray-800">{transaction.title}</p>
                 <p className="text-sm text-muted-foreground">{transaction.description}</p>
+                 {transaction.type === 'credit' && transaction.expiryDate && (
+                    <p className="text-xs text-red-600 mt-1">Expires on {new Date(transaction.expiryDate).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+                )}
             </div>
         </div>
         <div className="text-right">
             <p className={cn("font-bold text-lg", transaction.type === 'credit' ? 'text-green-600' : 'text-gray-800')}>
                 {transaction.type === 'credit' ? `+ ₹${transaction.amount.toFixed(2)}` : `- ₹${Math.abs(transaction.amount).toFixed(2)}`}
             </p>
-            <p className="text-xs text-muted-foreground">{transaction.date}</p>
+            <p className="text-xs text-muted-foreground">{new Date(transaction.date).toLocaleDateString('en-US', { day: 'numeric', month: 'short' })}</p>
         </div>
     </div>
 )
+
+const ActionButton = ({ icon: Icon, label, onClick }: { icon: React.ElementType, label: string, onClick?: () => void }) => (
+    <button 
+        className="flex flex-col items-center justify-center gap-2 p-3 rounded-xl bg-white hover:bg-gray-50 transition-colors border shadow-sm h-28"
+        onClick={onClick}
+    >
+        <div className="flex h-12 w-12 items-center justify-center rounded-full">
+             <Icon className="h-8 w-8 text-primary" />
+        </div>
+        <span className="text-sm font-semibold text-gray-700">{label}</span>
+    </button>
+);
 
 
 export default function WalletPage() {
@@ -127,13 +110,10 @@ export default function WalletPage() {
             </div>
         </div>
 
-        <div className="mt-6">
+        <div className="mt-6 grid grid-cols-2 gap-3">
             <Sheet open={isRedeemSheetOpen} onOpenChange={handleSheetOpenChange}>
                 <SheetTrigger asChild>
-                     <Button className="w-full h-12 bg-white text-primary font-bold shadow-sm border hover:bg-primary/5">
-                        <Gift className="h-5 w-5 mr-2" />
-                        Redeem Code
-                    </Button>
+                    <ActionButton icon={Gift} label="Redeem Code" />
                 </SheetTrigger>
                 <SheetContent side="bottom" className="rounded-t-2xl">
                     <SheetHeader>
@@ -184,6 +164,7 @@ export default function WalletPage() {
                     </div>
                 </SheetContent>
             </Sheet>
+            <ActionButton icon={Star} label="Scratch Card" onClick={() => router.push('/profile/scratch-cards')} />
         </div>
         
         <div className="mt-6">
@@ -216,3 +197,4 @@ export default function WalletPage() {
     </div>
   );
 }
+

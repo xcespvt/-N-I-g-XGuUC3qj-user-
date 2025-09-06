@@ -64,3 +64,14 @@ export type BookingDetails = {
     date: string;
     time: string;
 }
+
+export type WalletTransaction = {
+    id: number;
+    type: 'credit' | 'debit';
+    title: string;
+    description: string;
+    amount: number;
+    date: string;
+    expiryDate?: string;
+};
+

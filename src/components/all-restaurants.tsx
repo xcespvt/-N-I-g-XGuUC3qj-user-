@@ -74,7 +74,7 @@ export function AllRestaurants({ restaurants, favorites, onFavoriteToggle, offer
   return (
     <section>
       <div className="mb-4">
-        <div className="flex items-center gap-2 overflow-x-auto pb-2">
+        <div className="flex items-center gap-2 overflow-x-auto pb-2 no-scrollbar">
             <Button variant="outline" className="rounded-full bg-white border-gray-300 shrink-0" onClick={() => setIsFilterSheetOpen(true)}>
                 <ListFilter className="mr-2 h-4 w-4" />
                 Filter

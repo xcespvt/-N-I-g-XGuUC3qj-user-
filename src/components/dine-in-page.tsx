@@ -4,20 +4,17 @@
 import React from 'react';
 import type { Restaurant } from "@/lib/types";
 import { HighProteinAdCard } from "./high-protein-ad-card";
-import { BookingBanner } from './booking-banner';
 import { ChevronRight } from 'lucide-react';
 import { Carousel, CarouselContent, CarouselItem } from './ui/carousel';
-import { DineInSectionCard } from './dine-in-section-card';
 import { RestaurantCardList } from './restaurant-card-list';
 import { useLocalStorage } from '@/hooks/use-local-storage';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from './ui/button';
-
-type DineInPageProps = {
-  restaurants: Restaurant[];
-  favorites: string[];
-  onFavoriteToggle: (id: string) => void;
-};
+import { PromoBannerCarousel } from './promo-banner-carousel';
+import { CuisineCategories } from './cuisine-categories';
+import { useRouter } from 'next/navigation';
+import { TheatreCarousel } from './theatre-carousel';
+import { TaglineBanner } from './tagline-banner';
 
 const Section = ({ title, children, restaurants }: { title: string; children: React.ReactNode; restaurants: Restaurant[] }) => (
     <div>
@@ -27,7 +24,7 @@ const Section = ({ title, children, restaurants }: { title: string; children: Re
         <Carousel opts={{ align: "start", dragFree: true }}>
             <CarouselContent className="-ml-2">
                 {restaurants.map(r => (
-                    <CarouselItem key={r.id} className="pl-2 basis-4/5 sm:basis-1/2 md:basis-1/3">
+                    <CarouselItem key={r.id} className="pl-2 basis-1/5 sm:basis-1/6 md:basis-1/6">
                         {children(r)}
                     </CarouselItem>
                 ))}
@@ -36,6 +33,24 @@ const Section = ({ title, children, restaurants }: { title: string; children: Re
     </div>
 );
 
+const BrandCard = ({ restaurant }: { restaurant: Restaurant }) => {
+    const router = useRouter();
+    return (
+        <button 
+            onClick={() => router.push(`/restaurant/${restaurant.id}`)}
+            className="w-full h-24 flex items-center justify-center p-4 rounded-xl bg-gray-100 hover:bg-gray-200 transition-colors"
+        >
+            <span className="font-bold text-sm text-gray-800 text-center">{restaurant.name}</span>
+        </button>
+    )
+};
+
+
+type DineInPageProps = {
+  restaurants: Restaurant[];
+  favorites: string[];
+  onFavoriteToggle: (id: string) => void;
+};
 
 export function DineInPage({ restaurants, favorites, onFavoriteToggle }: DineInPageProps) {
   const [hiddenRestaurants, setHiddenRestaurants] = useLocalStorage<string[]>('hidden-restaurants', []);
@@ -68,48 +83,26 @@ export function DineInPage({ restaurants, favorites, onFavoriteToggle }: DineInP
   }
 
   const allDineInRestaurants = restaurants.filter(r => r.tags?.includes('Dine-in Special') && !hiddenRestaurants.includes(r.id));
-  const bestInBiryani = restaurants.filter(r => r.cuisine.includes('Biryani') && !hiddenRestaurants.includes(r.id)).slice(0, 5);
-  const featuredBrands = restaurants.filter(r => r.rating > 4.5 && !hiddenRestaurants.includes(r.id)).slice(0, 5);
+  const featuredBrands = restaurants.filter(r => r.rating > 4.5 && !hiddenRestaurants.includes(r.id)).slice(0, 10);
+  const movieTheatreRestaurants = restaurants.filter(r => r.tags?.includes('Movie Theatre'));
 
 
   return (
     <section className="space-y-8">
        
-       <div>
-        <BookingBanner />
-       </div>
+        <PromoBannerCarousel />
+       
+        <CuisineCategories />
 
-       <Section title="Dine-in Near You" restaurants={allDineInRestaurants.slice(0, 5)}>
-            {(restaurant: Restaurant) => (
-                 <DineInSectionCard 
-                    restaurant={restaurant} 
-                    isFavorite={favorites.includes(restaurant.id)}
-                    onFavoriteToggle={onFavoriteToggle}
-                    onClick={() => handleRestaurantClick(restaurant)}
-                />
-            )}
-       </Section>
-
-       <Section title="Best in Biryani" restaurants={bestInBiryani}>
-            {(restaurant: Restaurant) => (
-                 <DineInSectionCard 
-                    restaurant={restaurant} 
-                    isFavorite={favorites.includes(restaurant.id)}
-                    onFavoriteToggle={onFavoriteToggle}
-                    onClick={() => handleRestaurantClick(restaurant)}
-                />
-            )}
-       </Section>
+        <TaglineBanner />
+        
+        <div>
+          <h2 className="text-2xl font-bold mb-4">Dine-in at the Movies</h2>
+          <TheatreCarousel restaurants={movieTheatreRestaurants} />
+        </div>
        
        <Section title="Featured Brands" restaurants={featuredBrands}>
-            {(restaurant: Restaurant) => (
-                 <DineInSectionCard 
-                    restaurant={restaurant} 
-                    isFavorite={favorites.includes(restaurant.id)}
-                    onFavoriteToggle={onFavoriteToggle}
-                    onClick={() => handleRestaurantClick(restaurant)}
-                />
-            )}
+            {(restaurant: Restaurant) => <BrandCard restaurant={restaurant} />}
        </Section>
        
        <div className="space-y-4">

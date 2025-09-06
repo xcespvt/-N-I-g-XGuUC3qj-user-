@@ -31,7 +31,7 @@ function PreOrderPageComponent() {
   const handlePreOrder = () => {
     setOrderType('booking-preorder');
     // Navigate to the dine-in page and focus the menu
-    router.push(`/restaurant/${id}?view=menu`);
+    router.push(`/restaurant/${id}/details?view=menu`);
   };
 
   const handleContinue = () => {

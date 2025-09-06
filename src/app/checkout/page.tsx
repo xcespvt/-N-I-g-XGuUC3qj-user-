@@ -505,65 +505,61 @@ export default function CheckoutPage() {
 
                     {/* Billing Details */}
                     <div className="rounded-2xl bg-white p-4 shadow-sm">
-                        <h2 className="font-bold text-lg mb-3">Billing details</h2>
+                        <h2 className="font-bold text-lg mb-3">Bill Details</h2>
                         <div className="space-y-2 text-sm">
                             {hasFoodItems && (
                                 <div className="flex justify-between">
-                                    <p>Subtotal</p>
+                                    <p>Item Total</p>
                                     <p className="font-medium">₹{subtotal.toFixed(2)}</p>
                                 </div>
                             )}
                             {couponApplied && (
-                                <div className="flex justify-between text-primary">
-                                    <p>Discount (TRYCREVINGSNEW)</p>
+                                <div className="flex justify-between text-green-600">
+                                    <p>Discount</p>
                                     <p className="font-medium">-₹{discount.toFixed(2)}</p>
                                 </div>
                             )}
-                             {useWallet && walletDiscount > 0 && (
-                                <div className="flex justify-between text-primary">
-                                    <p>Wallet</p>
-                                    <p className="font-medium">-₹{walletDiscount.toFixed(2)}</p>
-                                </div>
-                            )}
-                            {isDeliveryFlow && deliveryOrTakeaway === 'delivery' && (
+                             {isDeliveryFlow && deliveryOrTakeaway === 'delivery' && (
                                 <div className="flex justify-between">
-                                    <p>Delivery</p>
+                                    <p>Delivery Fee</p>
                                     <p className="font-medium"><span className="line-through text-muted-foreground">₹{originalDeliveryFee.toFixed(2)}</span> <span className="text-primary">Free</span></p>
                                 </div>
                             )}
+                             <div className="flex justify-between text-muted-foreground">
+                                <p>Taxes & Charges</p>
+                                <p className="font-medium">₹{(taxes + platformFee).toFixed(2)}</p>
+                            </div>
                             {isDeliveryFlow && deliveryOrTakeaway === 'delivery' && tip > 0 && (
                                 <div className="flex justify-between">
-                                    <p>Tip for delivery partner</p>
+                                    <p>Delivery Tip</p>
                                     <p className="font-medium">₹{tip.toFixed(2)}</p>
                                 </div>
                             )}
-                             <div className="flex justify-between">
-                                <p>Taxes</p>
-                                <p className="font-medium">₹{taxes.toFixed(2)}</p>
-                            </div>
-                            <div className="flex justify-between">
-                                <p>Platform fee</p>
-                                <p className="font-medium">₹{platformFee.toFixed(2)}</p>
-                            </div>
-                            <Separator className="my-2"/>
-                             <div className="flex justify-between items-center py-2">
-                                <div className="flex items-center gap-2">
-                                    <Wallet className="h-5 w-5 text-primary" />
-                                    <div>
-                                        <p className="font-semibold">Use Wallet</p>
-                                        <p className="text-xs text-primary font-bold">Balance: ₹{walletBalance.toFixed(2)}</p>
-                                    </div>
-                                </div>
-                                <Switch checked={useWallet} onCheckedChange={setUseWallet} />
-                            </div>
-                            <Separator className="my-2"/>
-                             <div className="flex justify-between font-bold text-base">
-                                <p>Total</p>
-                                <p>₹{total.toFixed(2)}</p>
-                            </div>
                         </div>
-                         <div className="mt-3 bg-blue-100 text-blue-800 font-bold p-2 rounded-lg text-center text-sm border border-blue-200">
-                            Total saved on this order ₹{totalSaved.toFixed(2)}
+                        <Separator className="my-3 border-dashed"/>
+                        <div className="flex justify-between items-center py-2">
+                            <div className="flex items-center gap-2">
+                                <Wallet className="h-5 w-5 text-primary" />
+                                <div>
+                                    <p className="font-semibold">Use Crevings Wallet</p>
+                                    <p className="text-xs text-primary font-bold">Balance: ₹{walletBalance.toFixed(2)}</p>
+                                </div>
+                            </div>
+                            <Switch checked={useWallet} onCheckedChange={setUseWallet} />
+                        </div>
+                        {useWallet && walletDiscount > 0 && (
+                           <div className="flex justify-between text-green-600 text-sm mt-2">
+                               <p>Wallet Discount</p>
+                               <p className="font-medium">-₹{walletDiscount.toFixed(2)}</p>
+                           </div>
+                       )}
+                        <Separator className="my-3"/>
+                         <div className="flex justify-between font-bold text-xl">
+                            <p>To Pay</p>
+                            <p>₹{total.toFixed(2)}</p>
+                        </div>
+                         <div className="mt-4 bg-green-50 text-green-800 font-bold p-3 rounded-lg text-center text-sm border border-green-200">
+                            Total Savings on this order: ₹{totalSaved.toFixed(2)}
                         </div>
                     </div>
                 </div>

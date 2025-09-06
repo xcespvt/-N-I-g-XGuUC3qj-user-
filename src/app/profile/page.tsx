@@ -78,7 +78,7 @@ export default function ProfilePage() {
         <div className="mt-6 space-y-px rounded-xl shadow-sm overflow-hidden">
             <ProfileOption icon={Ticket} label="Coupons" onClick={() => router.push('/profile/coupons')} />
             <Separator />
-            <ProfileOption icon={Gift} label="Treasure Hunt" onClick={() => router.push('/profile/treasure')} />
+            <ProfileOption icon={Gift} label="Treasure Hunt" onClick={() => router.push('/profile/rewards')} />
         </div>
 
         <div className="mt-8">

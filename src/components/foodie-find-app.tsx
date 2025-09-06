@@ -16,6 +16,38 @@ import { ReorderPage } from './reorder-page';
 import { DineInPage } from './dine-in-page';
 import { useRouter } from 'next/navigation';
 import { LocationPermissionDialog } from './location-permission-dialog';
+import { Carousel, CarouselContent, CarouselItem } from './ui/carousel';
+import { TaglineBanner } from './tagline-banner';
+
+const Section = ({ title, children, restaurants }: { title: string; children: (restaurant: Restaurant) => React.ReactNode; restaurants: Restaurant[] }) => (
+    <div>
+        <div className="flex justify-between items-center mb-4">
+            <h2 className="text-2xl font-bold">{title}</h2>
+        </div>
+        <Carousel opts={{ align: "start", dragFree: true }}>
+            <CarouselContent className="-ml-2">
+                {restaurants.map(r => (
+                    <CarouselItem key={r.id} className="pl-2 basis-1/5 sm:basis-1/6 md:basis-1/6">
+                        {children(r)}
+                    </CarouselItem>
+                ))}
+            </CarouselContent>
+        </Carousel>
+    </div>
+);
+
+const BrandCard = ({ restaurant }: { restaurant: Restaurant }) => {
+    const router = useRouter();
+    return (
+        <button 
+            onClick={() => router.push(`/restaurant/${restaurant.id}`)}
+            className="w-full h-24 flex items-center justify-center p-2 rounded-xl bg-gray-100 hover:bg-gray-200 transition-colors"
+        >
+            <span className="font-bold text-[10px] text-gray-800 text-center leading-tight">{restaurant.name}</span>
+        </button>
+    )
+};
+
 
 export default function FoodieFindApp() {
   const [activeTab, setActiveTab] = useState('Food');
@@ -36,6 +68,7 @@ export default function FoodieFindApp() {
     distance: 14,
     dietary: [],
   });
+  const [hiddenRestaurants] = useLocalStorage<string[]>('hidden-restaurants', []);
 
 
   useEffect(() => {
@@ -91,18 +124,24 @@ export default function FoodieFindApp() {
     return [...filteredRestaurants].sort((a, b) => b.rating - a.rating).slice(0, 10);
   }, [filteredRestaurants]);
 
+  const featuredBrands = useMemo(() => {
+    return restaurants.filter(r => r.rating > 4.5 && !hiddenRestaurants.includes(r.id)).slice(0, 10);
+  }, [restaurants, hiddenRestaurants]);
+
+
   return (
-    <div className="flex min-h-screen w-full flex-col bg-gray-100">
-      <AppHeader
+    <div className="flex min-h-screen w-full flex-col bg-white">
+       <AppHeader
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         address={address}
         subAddress={subAddress}
         setAddress={setAddress}
         onAiSearchClick={() => router.push('/ai-search')}
+        showPromoBanner={activeTab !== 'Dine-in'}
       />
       <main className="flex-1 pb-20">
-        <div className="px-4 py-6">
+        <div className="px-4">
           {activeTab === 'Food' && (
             <>
               <CuisineCategories />
@@ -112,6 +151,12 @@ export default function FoodieFindApp() {
                   favorites={favorites}
                   onFavoriteToggle={handleFavoriteToggle}
                 />
+              </div>
+              <TaglineBanner />
+              <div className="mt-8">
+                <Section title="Featured Brands" restaurants={featuredBrands}>
+                    {(restaurant: Restaurant) => <BrandCard restaurant={restaurant} />}
+                </Section>
               </div>
               <div className="mt-8">
                 <AllRestaurants 
@@ -159,7 +204,7 @@ export default function FoodieFindApp() {
           )}
         </div>
       </main>
-      <footer className="bg-muted py-6 mt-8">
+      <footer className="bg-white py-6 mt-8">
         <div className="container mx-auto text-center text-muted-foreground px-4">
           <p>&copy; 2024 Foodie Find. All rights reserved.</p>
         </div>

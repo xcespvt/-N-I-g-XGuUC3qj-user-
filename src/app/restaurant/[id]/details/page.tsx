@@ -1,87 +1,45 @@
 
+
 'use client';
 
-import { Suspense, useState, useRef } from 'react';
+import { Suspense, useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
-import { useRouter, useParams } from 'next/navigation';
-import { ArrowLeft, Bookmark, Share2, Star, Clock, Plus, Search, ChevronsUpDown, PercentCircle, ChevronRight, Minus, Book, Mic, ShoppingBag, X, Trash2 } from 'lucide-react';
+import { useRouter, useParams, useSearchParams } from 'next/navigation';
+import { ArrowLeft, Star, Clock, Plus, Search, Mic, Minus, ChevronDown, Leaf, Info, Percent, Bookmark, Share2, Trophy, Book, ShoppingBag, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { restaurants } from '@/lib/mock-data';
 import { cn } from '@/lib/utils';
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-} from "@/components/ui/carousel"
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet"
-import Link from 'next/link';
+import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Progress } from '@/components/ui/progress';
 
+const classicFriesItem = {
+    name: "Classic Fries",
+    price: 129,
+    originalPrice: 149,
+    isVeg: true,
+    description: "Perfectly salted crispy fries.",
+    image: "https://placehold.co/300x300.png",
+    hint: "french fries",
+    tags: ["Bestseller"],
+    portion: "Serves 1",
+    rating: 4.2,
+    ratingCount: 250,
+    type: "Cheesy Bliss",
+};
 
 const menuItems = [
-    { category: "Treat Time", items: [
-      { id: "treat1", name: "Mini Peri Peri Punjabi Aloo Samosa", price: 109, originalPrice: 129, isVeg: true, description: "Three mini aloo samosas with peri peri masala.", image: "https://placehold.co/300x300.png", hint: "samosa indian food", tags: ["Bestseller"], portion: "3 Pieces" },
-      { id: "treat2", name: "Mini Punjabi Aloo Samosa", price: 109, originalPrice: 129, isVeg: true, description: "As classic as samosa gets, comes with chutn...", image: "https://placehold.co/300x300.png", hint: "samosa indian food", portion: "3 Pieces" },
-      { id: "treat3", name: "Dark Chocolate Shake", price: 189, originalPrice: 209, isVeg: true, description: "Creamy, decadent milkshake.", image: "https://placehold.co/300x300.png", hint: "chocolate milkshake", portion: "450 ml" },
-    ]},
-    { category: "Crispy Classics", items: [
-      { id: "crispy1", name: "Classic Fries", price: 129, originalPrice: 149, isVeg: true, description: "Perfectly salted crispy fries.", image: "https://placehold.co/300x300.png", hint: "french fries", tags: ["Bestseller"], portion: "Serves 1" },
-      { id: "crispy2", name: "Peri Peri Fries", price: 139, originalPrice: 159, isVeg: true, description: "Crispy fries with a spicy peri peri kick.", image: "https://placehold.co/300x300.png", hint: "spicy french fries", portion: "Serves 1" },
-    ]},
-    { category: "Starters", items: [
-        { id: "starter1", name: "Paneer Tikka", price: 249, originalPrice: 299, isVeg: true, description: "Marinated cottage cheese grilled to perfection.", image: "https://placehold.co/300x300.png", hint: "paneer tikka starter", portion: "6 Pieces" },
-        { id: "starter2", name: "Hara Bhara Kebab", price: 219, originalPrice: 259, isVeg: true, description: "Spinach and vegetable patties, deep-fried.", image: "https://placehold.co/300x300.png", hint: "kebab starter", portion: "6 Pieces" },
-        { id: "starter3", name: "Chicken 65", price: 289, originalPrice: 329, isVeg: false, description: "Spicy, deep-fried chicken appetizer.", image: "https://placehold.co/300x300.png", hint: "chicken appetizer", tags: ["Bestseller"], portion: "Serves 1" },
-        { id: "starter4", name: "Chilli Chicken", price: 279, originalPrice: 319, isVeg: false, description: "Indo-Chinese style spicy chicken.", image: "https://placehold.co/300x300.png", hint: "chilli chicken", portion: "Serves 1" },
-        { id: "starter5", name: "Fish Fry", price: 349, originalPrice: 399, isVeg: false, description: "Crispy fried fish with Indian spices.", image: "https://placehold.co/300x300.png", hint: "fish fry", portion: "4 Pieces" },
-      ]},
-    { category: "Main Course", items: [
-        { id: "main1", name: "Dal Makhani", price: 299, originalPrice: 349, isVeg: true, description: "Creamy black lentils cooked overnight.", image: "https://placehold.co/300x300.png", hint: "dal makhani", tags: ["Bestseller"], portion: "Serves 2" },
-        { id: "main2", name: "Paneer Butter Masala", price: 329, originalPrice: 379, isVeg: true, description: "Rich and creamy tomato-based paneer curry.", image: "https://placehold.co/300x300.png", hint: "paneer butter masala", portion: "Serves 2" },
-        { id: "main3", name: "Kadai Paneer", price: 319, originalPrice: 369, isVeg: true, description: "Spicy paneer curry with bell peppers.", image: "https://placehold.co/300x300.png", hint: "kadai paneer", portion: "Serves 2" },
-        { id: "main4", name: "Butter Chicken", price: 389, originalPrice: 439, isVeg: false, description: "Classic creamy chicken in tomato gravy.", image: "https://placehold.co/300x300.png", hint: "butter chicken", tags: ["Bestseller"], portion: "Serves 2" },
-        { id: "main5", name: "Chicken Tikka Masala", price: 399, originalPrice: 449, isVeg: false, description: "Grilled chicken in a spicy tomato sauce.", image: "https://placehold.co/300x300.png", hint: "chicken tikka masala", portion: "Serves 2" },
-        { id: "main6", name: "Mutton Rogan Josh", price: 449, originalPrice: 499, isVeg: false, description: "Aromatic lamb curry from Kashmir.", image: "https://placehold.co/300x300.png", hint: "mutton curry", portion: "Serves 2" },
-    ]},
-    { category: "Biryani", items: [
-        { id: "biryani1", name: "Veg Hyderabadi Biryani", price: 289, originalPrice: 329, isVeg: true, description: "Aromatic rice dish with mixed vegetables.", image: "https://placehold.co/300x300.png", hint: "veg biryani", portion: "Serves 1" },
-        { id: "biryani2", name: "Paneer Tikka Biryani", price: 309, originalPrice: 359, isVeg: true, description: "Biryani with chunks of grilled paneer.", image: "https://placehold.co/300x300.png", hint: "paneer biryani", portion: "Serves 1" },
-        { id: "biryani3", name: "Chicken Dum Biryani", price: 349, originalPrice: 399, isVeg: false, description: "Slow-cooked chicken and rice biryani.", image: "https://placehold.co/300x300.png", hint: "chicken biryani", tags: ["Bestseller"], portion: "Serves 1" },
-        { id: "biryani4", name: "Mutton Biryani", price: 419, originalPrice: 469, isVeg: false, description: "Flavorful biryani with tender mutton pieces.", image: "https://placehold.co/300x300.png", hint: "mutton biryani", portion: "Serves 1" },
-    ]},
-    { category: "Breads", items: [
-        { id: "bread1", name: "Tandoori Roti", price: 40, originalPrice: 50, isVeg: true, description: "Whole wheat bread baked in a tandoor.", image: "https://placehold.co/300x300.png", hint: "indian bread", portion: "1 Piece" },
-        { id: "bread2", name: "Butter Naan", price: 60, originalPrice: 75, isVeg: true, description: "Soft leavened bread with butter.", image: "https://placehold.co/300x300.png", hint: "naan bread", tags: ["Bestseller"], portion: "1 Piece" },
-        { id: "bread3", name: "Garlic Naan", price: 70, originalPrice: 85, isVeg: true, description: "Naan bread flavored with garlic.", image: "https://placehold.co/300x300.png", hint: "garlic naan", portion: "1 Piece" },
-        { id: "bread4", name: "Lachha Paratha", price: 65, originalPrice: 80, isVeg: true, description: "Layered whole wheat bread.", image: "https://placehold.co/300x300.png", hint: "paratha bread", portion: "1 Piece" },
-    ]},
-    { category: "Desserts", items: [
-        { id: "dessert1", name: "Gulab Jamun", price: 99, originalPrice: 119, isVeg: true, description: "Soft, spongy balls in sugar syrup.", image: "https://placehold.co/300x300.png", hint: "indian dessert", portion: "2 Pieces" },
-        { id: "dessert2", name: "Ras Malai", price: 129, originalPrice: 149, isVeg: true, description: "Cottage cheese dumplings in creamy milk.", image: "https://placehold.co/300x300.png", hint: "indian sweet", portion: "2 Pieces" },
-        { id: "dessert3", name: "Chocolate Brownie", price: 149, originalPrice: 179, isVeg: true, description: "Fudgy chocolate brownie with nuts.", image: "https://placehold.co/300x300.png", hint: "chocolate brownie", portion: "1 Piece" },
-        { id: "dessert4", name: "Ice Cream", price: 109, originalPrice: 129, isVeg: true, description: "Choice of vanilla, chocolate, or strawberry.", image: "https://placehold.co/300x300.png", hint: "ice cream scoop", portion: "1 Scoop" },
-    ]},
-    { category: "Beverages", items: [
-        { id: "bev1", name: "Fresh Lime Soda", price: 89, originalPrice: 99, isVeg: true, description: "Refreshing sweet and salty lime soda.", image: "https://placehold.co/300x300.png", hint: "lime soda drink", portion: "300 ml" },
-        { id: "bev2", name: "Masala Chaas", price: 79, originalPrice: 89, isVeg: true, description: "Spiced buttermilk.", image: "https://placehold.co/300x300.png", hint: "buttermilk drink", portion: "300 ml" },
-        { id: "bev3", name: "Lassi (Sweet/Salty)", price: 99, originalPrice: 119, isVeg: true, description: "Yogurt-based drink.", image: "https://placehold.co/300x300.png", hint: "lassi drink", portion: "300 ml" },
-        { id: "bev4", name: "Coke", price: 60, isVeg: true, description: "Chilled Coca-Cola.", image: "https://placehold.co/300x300.png", hint: "coke soda", portion: "300 ml" },
-    ]},
-    { category: "Combos", items: [
-        { id: "combo1", name: "Veg Thali", price: 349, originalPrice: 399, isVeg: true, description: "Dal, Paneer, Veg, Rice, Roti, Salad.", image: "https://placehold.co/300x300.png", hint: "veg thali meal", tags: ["Bestseller"], portion: "Serves 1" },
-        { id: "combo2", name: "Non-Veg Thali", price: 449, originalPrice: 499, isVeg: false, description: "Chicken, Dal, Veg, Rice, Roti, Salad.", image: "https://placehold.co/300x300.png", hint: "non veg thali meal", portion: "Serves 1" },
-        { id: "combo3", name: "Family Combo", price: 899, originalPrice: 999, isVeg: false, description: "Butter Chicken, Dal, Biryani, Naan (2), Coke (2).", image: "https://placehold.co/300x300.png", hint: "family meal combo", portion: "Serves 2-3" },
-    ]}
-  ];
+    {
+        category: "Classic Fries",
+        items: Array.from({ length: 25 }, (_, i) => ({
+            ...classicFriesItem,
+            id: `fries${i + 1}`,
+        }))
+    }
+];
+
 
 const addOnOptions = {
     chai: [
@@ -102,6 +60,13 @@ const addOnOptions = {
     ]
 };
 
+const availableOffers = [
+    { type: 'discount', title: 'FLAT ₹125 OFF', description: 'On orders above ₹599' },
+    { type: 'promo', title: '20% OFF up to ₹100', description: 'With SBI Credit Cards' },
+    { type: 'freebie', title: 'Free Delivery', description: 'On all orders today!' },
+    { type: 'deal', title: 'Items at ₹199', description: 'On select items' },
+]
+
 type MenuItem = typeof menuItems[0]['items'][0];
 type CartItem = {
     id: string;
@@ -112,27 +77,33 @@ type CartItem = {
 };
 type Cart = { [cartItemId: string]: CartItem };
 
-const CashbackIcon = () => (
-    <svg width="40" height="40" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M4 14C4 12.8954 4.89543 12 6 12H42C43.1046 12 44 12.8954 44 14V34C44 35.1046 43.1046 36 42 36H6C4.89543 36 4 35.1046 4 34V14Z" fill="#E3F2FD"/>
-        <path d="M4 18V30C4 28.8954 4.89543 28 6 28H42C43.1046 28 44 28.8954 44 30V18C44 19.1046 43.1046 20 42 20H6C4.89543 20 4 19.1046 4 18Z" fill="#90CAF9"/>
-        <path d="M24 24C26.7614 24 29 21.7614 29 19C29 16.2386 26.7614 14 24 14C21.2386 14 19 16.2386 19 19C19 21.7614 21.2386 24 24 24Z" fill="#1976D2"/>
-    </svg>
+const VegNonVegIcon = ({ isVeg }: { isVeg: boolean }) => (
+    <div className={`w-4 h-4 border ${isVeg ? 'border-green-600' : 'border-red-600'} flex items-center justify-center`}>
+        <div className={`w-2 h-2 rounded-full ${isVeg ? 'bg-green-600' : 'bg-red-600'}`}></div>
+    </div>
 );
 
 function RestaurantDetailsPageComponent() {
   const router = useRouter();
   const params = useParams();
+  const searchParams = useSearchParams();
+  const view = searchParams.get('view');
   const id = params.id as string;
   const restaurant = restaurants.find(r => r.id === id) || restaurants[0];
   
   const [cart, setCart] = useState<Cart>({});
+  const [searchQuery, setSearchQuery] = useState('');
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
   const [isAddOnSheetOpen, setIsAddOnSheetOpen] = useState(false);
-  const [activeFilter, setActiveFilter] = useState('veg');
-  
-  const categoryRefs = useRef<{[key: string]: HTMLDivElement | null}>({});
   const [isMenuSheetOpen, setIsMenuSheetOpen] = useState(false);
+  const categoryRefs = useRef<{[key: string]: HTMLDivElement | null}>({});
+  const mainContentRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (view === 'menu' && mainContentRef.current) {
+      mainContentRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [view]);
 
   const handleUpdateCart = (item: CartItem) => {
     setCart(prevCart => {
@@ -146,36 +117,154 @@ function RestaurantDetailsPageComponent() {
     });
   };
 
-  const getItemQuantity = (itemId: string) => {
-    return Object.values(cart).filter(item => item.id.startsWith(itemId)).reduce((sum, item) => sum + item.quantity, 0);
-  }
+  const getItemQuantity = (itemId: string) => Object.values(cart).filter(i => i.id.startsWith(itemId)).reduce((sum, item) => sum + item.quantity, 0);
   
   const totalItems = Object.values(cart).reduce((sum, item) => sum + item.quantity, 0);
-  const totalCost = Object.values(cart).reduce((sum, item) => {
-    const addOnsCost = item.addOns.reduce((addOnSum, addOn) => addOnSum + addOn.price, 0);
-    return sum + (item.price + addOnsCost) * item.quantity;
-  }, 0);
-
-  const discountThreshold = 500;
-  const progress = Math.min((totalCost / discountThreshold) * 100, 100);
-  const amountNeeded = discountThreshold - totalCost;
-
-
-  const handleCategoryClick = (category: string) => {
-    categoryRefs.current[category]?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    setIsMenuSheetOpen(false);
-  };
   
+  const getRestaurantStatus = (opensAt: string) => {
+    const now = new Date();
+    const openTime = new Date();
+    const [time, period] = opensAt.split(' ');
+    let [hours, minutes] = time.split(':').map(Number);
+
+    if (period === 'PM' && hours < 12) {
+      hours += 12;
+    }
+    if (period === 'AM' && hours === 12) {
+      hours = 0;
+    }
+    openTime.setHours(hours, minutes, 0, 0);
+
+    const closeTime = new Date(openTime);
+    closeTime.setHours(openTime.getHours() + 12); // Assuming 12-hour operation
+
+    const oneHourBeforeClose = new Date(closeTime);
+    oneHourBeforeClose.setHours(closeTime.getHours() - 1);
+
+    if (now >= openTime && now < oneHourBeforeClose) {
+      return { text: 'Open', color: 'text-green-600' };
+    } else if (now >= oneHourBeforeClose && now < closeTime) {
+      return { text: 'Closing soon', color: 'text-orange-500' };
+    } else {
+      return { text: 'Closed', color: 'text-red-500' };
+    }
+  };
+
+  const status = getRestaurantStatus(restaurant.opensAt);
+
+  const filteredMenuItems = menuItems.map(category => ({
+    ...category,
+    items: category.items.filter(item =>
+      item.name.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+  })).filter(category => category.items.length > 0);
+
   const handleAddItemClick = (item: MenuItem) => {
     setSelectedItem(item);
     setIsAddOnSheetOpen(true);
   };
-
+  
   const handleRemoveItemClick = (item: MenuItem) => {
     const itemInCart = Object.values(cart).find(cartItem => cartItem.id.startsWith(item.id) && cartItem.addOns.length === 0);
     if(itemInCart && itemInCart.quantity > 0) {
         handleUpdateCart({ ...itemInCart, quantity: itemInCart.quantity - 1 });
     }
+  }
+
+  const handleCategoryClick = (category: string) => {
+    categoryRefs.current[category]?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    setIsMenuSheetOpen(false);
+  };
+
+  const MenuListItem = ({ item }: { item: MenuItem }) => {
+    const quantity = getItemQuantity(item.id);
+    return (
+        <div className="flex items-center gap-4 py-4">
+            <div className="w-24 h-24 relative flex-shrink-0">
+                <Image src={item.image} alt={item.name} fill className="object-cover rounded-xl" data-ai-hint={item.hint} />
+            </div>
+            <div className="flex-1">
+                <div className="flex justify-between items-start">
+                    <div>
+                        <Badge variant="outline" className="border-primary/30 text-primary bg-primary/10">{'Bestseller'}</Badge>
+                        <h3 className="font-bold text-gray-800 mt-1">{item.name}</h3>
+                        <p className="text-xs text-muted-foreground mt-1 truncate">{item.description}</p>
+                    </div>
+                    <div className="flex items-center gap-1 text-sm font-bold">
+                        <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
+                        <span>{item.rating?.toFixed(1)}</span>
+                        <span className="text-muted-foreground font-normal">({item.ratingCount})</span>
+                    </div>
+                </div>
+                <div className="flex justify-between items-center mt-2">
+                    <p className="text-lg font-bold text-primary">₹{item.price}</p>
+                    {quantity === 0 ? (
+                      <Button 
+                          variant="outline"
+                          className="text-primary border-primary w-20 h-8 font-bold rounded-lg"
+                          onClick={() => handleAddItemClick(item)}
+                      >
+                        ADD
+                      </Button>
+                    ) : (
+                      <div className="flex items-center justify-center bg-primary text-white h-9 font-bold rounded-full w-24">
+                        <Button variant="ghost" size="icon" className="text-white h-full w-8 rounded-l-full hover:bg-primary/80" onClick={() => handleRemoveItemClick(item)}>
+                          <Minus className="w-5 h-5" />
+                        </Button>
+                        <span className="text-base">{quantity}</span>
+                        <Button variant="ghost" size="icon" className="text-white h-full w-8 rounded-r-full hover:bg-primary/80" onClick={() => handleAddItemClick(item)}>
+                          <Plus className="w-5 h-5" />
+                        </Button>
+                      </div>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+  };
+
+  const MenuGridItem = ({ item }: { item: MenuItem }) => {
+      const quantity = getItemQuantity(item.id);
+      return (
+          <div className="flex flex-col">
+              <div className="relative aspect-square w-full">
+                  <Image src={item.image} alt={item.name} fill className="object-cover rounded-xl" data-ai-hint={item.hint} />
+              </div>
+              <div className="mt-2">
+                  <div className="flex items-start gap-1.5 mb-1">
+                      <VegNonVegIcon isVeg={item.isVeg} />
+                      <div className="flex items-center gap-1 text-primary text-xs font-bold">
+                          <Star className="h-3 w-3 fill-current" />
+                          <span>{item.rating?.toFixed(1)}</span>
+                      </div>
+                  </div>
+                  <h3 className="font-semibold text-sm truncate">{item.name}</h3>
+                  <p className="text-xs text-muted-foreground mt-0.5">{item.portion}</p>
+                  <div className="flex justify-between items-center mt-2">
+                    <p className="font-bold text-sm">₹{item.price}</p>
+                    {quantity === 0 ? (
+                        <Button 
+                            variant="outline"
+                            className="text-primary border-primary w-20 h-8 font-bold rounded-lg"
+                            onClick={() => handleAddItemClick(item)}
+                        >
+                          ADD
+                        </Button>
+                      ) : (
+                        <div className="flex items-center justify-center bg-white border border-primary text-primary w-20 h-8 font-bold rounded-lg">
+                          <Button variant="ghost" size="icon" className="text-primary h-full w-6 rounded-l-lg" onClick={() => handleRemoveItemClick(item)}>
+                            <Minus className="w-4 h-4" />
+                          </Button>
+                          <span className="text-sm">{quantity}</span>
+                          <Button variant="ghost" size="icon" className="text-primary h-full w-6 rounded-r-lg" onClick={() => handleAddItemClick(item)}>
+                            <Plus className="w-4 w-4" />
+                          </Button>
+                        </div>
+                      )}
+                  </div>
+              </div>
+          </div>
+      );
   }
 
   const AddOnSheet = ({ item, open, onOpenChange }: { item: MenuItem | null, open: boolean, onOpenChange: (open: boolean) => void }) => {
@@ -221,9 +310,7 @@ function RestaurantDetailsPageComponent() {
             <SheetContent side="bottom" className="rounded-t-2xl h-[80vh] flex flex-col p-0">
                 <SheetHeader className="p-4 border-b">
                     <div className="flex items-center gap-2">
-                         <div className={`w-5 h-5 border-2 ${item.isVeg ? 'border-primary' : 'border-red-600'} flex items-center justify-center`}>
-                            <div className={`w-2.5 h-2.5 rounded-full ${item.isVeg ? 'bg-primary' : 'bg-red-600'}`}></div>
-                        </div>
+                         <VegNonVegIcon isVeg={item.isVeg} />
                         <SheetTitle className="text-left">{item.name}</SheetTitle>
                     </div>
                 </SheetHeader>
@@ -237,7 +324,7 @@ function RestaurantDetailsPageComponent() {
                                     <div className="flex items-start gap-3">
                                         <Image src={addOn.image} alt={addOn.name} width={64} height={64} className="rounded-lg object-cover" data-ai-hint={addOn.hint} />
                                         <div>
-                                            <div className="w-4 h-4 border border-primary flex items-center justify-center"><div className="w-2 h-2 rounded-full bg-primary"></div></div>
+                                            <VegNonVegIcon isVeg={addOn.isVeg} />
                                             <p className="font-semibold">{addOn.name}</p>
                                             <p className="text-sm text-muted-foreground">{addOn.portion}</p>
                                         </div>
@@ -260,7 +347,7 @@ function RestaurantDetailsPageComponent() {
                                     <div className="flex items-start gap-3">
                                         <Image src={addOn.image} alt={addOn.name} width={64} height={64} className="rounded-lg object-cover" data-ai-hint={addOn.hint} />
                                         <div>
-                                            <div className="w-4 h-4 border border-primary flex items-center justify-center"><div className="w-2 h-2 rounded-full bg-primary"></div></div>
+                                            <VegNonVegIcon isVeg={addOn.isVeg} />
                                             <p className="font-semibold">{addOn.name}</p>
                                             <p className="text-sm text-muted-foreground">{addOn.portion}</p>
                                         </div>
@@ -283,7 +370,7 @@ function RestaurantDetailsPageComponent() {
                                     <div className="flex items-start gap-3">
                                         <Image src={addOn.image} alt={addOn.name} width={64} height={64} className="rounded-lg object-cover" data-ai-hint={addOn.hint} />
                                         <div>
-                                            <div className="w-4 h-4 border border-primary flex items-center justify-center"><div className="w-2 h-2 rounded-full bg-primary"></div></div>
+                                            <VegNonVegIcon isVeg={addOn.isVeg} />
                                             <p className="font-semibold">{addOn.name}</p>
                                             <p className="text-sm text-muted-foreground">{addOn.portion}</p>
                                         </div>
@@ -318,171 +405,131 @@ function RestaurantDetailsPageComponent() {
   }
 
   return (
-    <div className="bg-background min-h-screen">
-       <header className="relative h-64">
-        <Image
-          src={restaurant.image}
-          alt={restaurant.name}
-          fill
-          className="object-cover"
-          data-ai-hint="restaurant interior elegant"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-        <div className="absolute top-4 left-4 right-4 flex justify-between items-center">
-          <Button variant="ghost" size="icon" className="rounded-full bg-black/30 text-white" onClick={() => router.back()}>
-            <ArrowLeft />
-          </Button>
-          <div className="flex gap-2">
-            <Button variant="ghost" size="icon" className="rounded-full bg-black/30 text-white">
-              <Bookmark />
-            </Button>
-            <Button variant="ghost" size="icon" className="rounded-full bg-black/30 text-white">
-              <Share2 />
-            </Button>
-          </div>
-        </div>
-      </header>
-      
-      <main className="p-4 -mt-16 z-10 relative pb-24">
-         <div className="bg-white rounded-2xl p-4 shadow-lg">
-          <div className="flex justify-between items-start">
-            <div>
-              <h1 className="text-3xl font-bold">{restaurant.name}</h1>
-              <p className="text-muted-foreground mt-1">{restaurant.location}</p>
-              <div className="flex items-center gap-4 text-sm text-muted-foreground mt-2">
-                <span>{restaurant.distance} km away</span>
-                <span>₹{restaurant.priceForTwo} for two</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm text-primary font-semibold mt-2">
-                <Clock className="h-4 w-4" />
-                <span>Opens at {restaurant.opensAt}</span>
-              </div>
-            </div>
-            <Link href={`/restaurant/${restaurant.id}/reviews`} className="flex flex-col items-center cursor-pointer">
-                <div className="flex items-center gap-2 bg-green-700 text-white rounded-full px-4 py-1.5 shadow-md">
-                    <div className="bg-white rounded-full p-0.5">
-                        <Star className="h-4 w-4 text-green-700 fill-current" />
+    <div className="bg-white min-h-screen">
+       {view !== 'menu' && (
+        <>
+            <div className="relative w-full aspect-[16/9]">
+                <Image
+                src={restaurant.image}
+                alt={restaurant.name}
+                fill
+                className="object-cover"
+                data-ai-hint="restaurant interior elegant"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                <div className="absolute top-4 left-4 right-4 flex justify-between items-center">
+                    <Button variant="ghost" size="icon" className="rounded-full bg-white/80 text-primary hover:bg-white" onClick={() => router.back()}>
+                        <ArrowLeft />
+                    </Button>
+                    <div className="flex items-center gap-2">
+                        <Button variant="ghost" size="icon" className="rounded-full bg-white/80 text-primary hover:bg-white">
+                            <Bookmark />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="rounded-full bg-white/80 text-primary hover:bg-white">
+                            <Share2 />
+                        </Button>
                     </div>
-                    <span className="font-bold text-lg">{restaurant.rating.toFixed(1)}</span>
-                </div>
-                <div className="text-center mt-1">
-                    <p className="text-xs font-bold text-gray-600 border-b-2 border-dotted">By {restaurant.reviews} Reviews</p>
-                </div>
-            </Link>
-          </div>
-        </div>
-
-        <div className="mt-6 bg-blue-50 border-2 border-blue-200 rounded-2xl p-3 flex justify-between items-center shadow-sm">
-            <div className="flex items-center gap-2">
-                <CashbackIcon />
-                <div>
-                    <h3 className="font-bold text-blue-800">Get 10% cashback</h3>
-                    <p className="text-xs text-blue-700">on every dining bill payment</p>
                 </div>
             </div>
-            <ChevronRight className="text-blue-600" />
-        </div>
-
-        <div className="mt-6 p-4 bg-white rounded-2xl shadow-lg">
-          <div className="flex gap-2">
-            <div className="relative flex-grow">
+             <main className="pb-24 relative z-10 -mt-16">
+                 <div className="bg-white p-4 border-b rounded-b-2xl">
+                    <div className="flex justify-between items-start">
+                        <div>
+                            <h1 className="text-3xl font-bold">{restaurant.name}</h1>
+                            <p className="text-sm text-muted-foreground mt-1">
+                                {restaurant.deliveryTime}-{restaurant.deliveryTime + 5} mins | {restaurant.location}, {restaurant.distance} km
+                            </p>
+                            <div className="flex items-center gap-2 text-sm font-semibold mt-2">
+                                <Clock className="h-4 w-4 text-primary" />
+                                <span>Opens at {restaurant.opensAt}</span>
+                                <span className={cn("font-bold", status.color)}>({status.text})</span>
+                            </div>
+                        </div>
+                        <div className="flex flex-col items-center">
+                            <div className="flex items-center gap-1 bg-primary text-white px-2 py-0.5 rounded-full">
+                                <span className="font-bold">{restaurant.rating.toFixed(1)}</span>
+                                <Star className="h-3 w-3" />
+                            </div>
+                            <p className="text-xs text-muted-foreground mt-1">{restaurant.reviews} ratings</p>
+                        </div>
+                    </div>
+                 </div>
+                 <div className="mt-4">
+                    <Carousel opts={{ align: "start", dragFree: true }}>
+                        <CarouselContent className="-ml-2">
+                            {availableOffers.map((offer, index) => (
+                                <CarouselItem key={index} className="pl-4 basis-10/12 md:basis-1/2">
+                                    <div className="rounded-xl p-3 flex items-center gap-3 bg-primary/5 border border-primary/20">
+                                        <div className="p-2 bg-primary/10 rounded-lg">
+                                            <Percent className="h-5 w-5 text-primary" />
+                                        </div>
+                                        <div>
+                                            <h3 className="font-bold text-sm text-primary">{offer.title}</h3>
+                                            <p className="text-xs text-primary/80">{offer.description}</p>
+                                        </div>
+                                    </div>
+                                </CarouselItem>
+                            ))}
+                        </CarouselContent>
+                    </Carousel>
+                </div>
+             </main>
+        </>
+       )}
+      
+      <div ref={mainContentRef}>
+        <div className="mt-6 sticky top-0 bg-white z-10 py-2 shadow-sm">
+          <div className='px-4'>
+            <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                <input type="search" placeholder="Search in menu" className="pl-10 h-11 rounded-lg border w-full bg-gray-50" />
+                <input 
+                    type="search" 
+                    placeholder="Search for dishes" 
+                    className="pl-10 pr-12 h-11 rounded-2xl border w-full bg-gray-50"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                />
+                 <Button variant="ghost" size="icon" className="absolute right-1 top-1/2 -translate-y-1/2 h-10 w-10">
+                  <Mic className="h-5 w-5 text-primary" />
+                </Button>
             </div>
-            <Button variant="ghost" size="icon" className="h-11 w-11 border bg-gray-50 rounded-lg">
-              <Mic className="h-5 w-5 text-primary" />
-            </Button>
-          </div>
-
-          <div className="mt-4 flex gap-2 rounded-full bg-gray-100 p-1">
-            <button
-                onClick={() => setActiveFilter('veg')}
-                className={cn(
-                    "flex-1 rounded-full px-3 py-1.5 text-sm font-semibold transition-colors flex items-center justify-center gap-1.5",
-                    activeFilter === 'veg' ? 'bg-white text-primary shadow-sm' : 'text-gray-600'
-                )}
-            >
-                <div className="w-4 h-4 border border-primary flex items-center justify-center"><div className="w-2 h-2 rounded-full bg-primary"></div></div>
-                Veg
-            </button>
-            <button
-                onClick={() => setActiveFilter('non-veg')}
-                className={cn(
-                    "flex-1 rounded-full px-3 py-1.5 text-sm font-semibold transition-colors flex items-center justify-center gap-1.5",
-                    activeFilter === 'non-veg' ? 'bg-white text-red-700 shadow-sm' : 'text-gray-600'
-                )}
-            >
-                <div className="w-4 h-4 border border-red-600 flex items-center justify-center"><div className="w-2 h-2 rounded-full bg-red-600"></div></div>
-                Non-Veg
-            </button>
+             <div className="mt-3 flex gap-2 overflow-x-auto pb-2 no-scrollbar">
+                <Button variant="outline" className="rounded-full bg-gray-100 border-gray-300 shrink-0">Pure Veg</Button>
+                <Button variant="outline" className="rounded-full bg-gray-100 border-gray-300 shrink-0">Ratings 4.0+</Button>
+                <Button variant="outline" className="rounded-full bg-gray-100 border-gray-300 shrink-0">Buy 1 Get 1</Button>
+                <Button variant="outline" className="rounded-full bg-gray-100 border-gray-300 shrink-0">Bestseller</Button>
+            </div>
           </div>
         </div>
         
-        <div className="space-y-6 mt-6">
-            {menuItems.map(category => (
+        <div className="mt-6 px-4 pb-24">
+            {filteredMenuItems.map((category, catIndex) => (
                 <div key={category.category} ref={el => categoryRefs.current[category.category] = el}>
-                <h2 className="text-xl font-bold mb-4">{category.category}</h2>
-                <Carousel opts={{ align: "start", dragFree: true }}>
-                    <CarouselContent className="-ml-1">
-                    {category.items.map((item, index) => {
-                      const quantity = getItemQuantity(item.id);
-                      return (
-                        <CarouselItem key={item.name} className="basis-7/12 md:basis-1/3 lg:basis-1/4 pl-4">
-                            <div className="w-full">
-                                <div className="relative aspect-square w-full mb-2">
-                                    <Image src={item.image} alt={item.name} fill className="object-cover rounded-xl" data-ai-hint={item.hint} />
-                                    {item.tags?.includes('Bestseller') && <Badge className="absolute top-2 left-2 bg-yellow-400 text-yellow-900">★ Bestseller</Badge>}
-                                    
-                                    <div className="absolute -bottom-3 right-3">
-                                      {quantity === 0 ? (
-                                        <Button size="icon" className="bg-primary hover:bg-primary/90 text-white rounded-full h-9 w-9 shadow-lg" onClick={() => handleAddItemClick(item)}>
-                                          <Plus className="w-5 h-5" />
-                                        </Button>
-                                      ) : (
-                                        <div className="flex items-center justify-center bg-primary text-white rounded-full shadow-lg h-9 w-24">
-                                          <Button variant="ghost" size="icon" className="text-white h-full w-8 rounded-l-full hover:bg-primary/80" onClick={() => handleRemoveItemClick(item)}>
-                                            <Minus className="w-5 h-5" />
-                                          </Button>
-                                          <span className="font-bold text-base">{quantity}</span>
-                                          <Button variant="ghost" size="icon" className="text-white h-full w-8 rounded-r-full hover:bg-primary/80" onClick={() => handleAddItemClick(item)}>
-                                            <Plus className="w-5 h-5" />
-                                          </Button>
-                                        </div>
-                                      )}
-                                    </div>
-                                </div>
-                                <div className="flex items-center gap-1">
-                                    <div className={`w-4 h-4 border ${item.isVeg ? 'border-primary' : 'border-red-600'} flex items-center justify-center`}>
-                                        <div className={`w-2 h-2 rounded-full ${item.isVeg ? 'bg-primary' : 'bg-red-600'}`}></div>
-                                    </div>
-                                    {item.portion && <Badge variant="outline" className="text-xs">{item.portion}</Badge>}
-                                </div>
-                                <h3 className="font-semibold mt-1 truncate">{item.name}</h3>
-                                <p className="text-xs text-muted-foreground mt-0.5 h-8">{item.description}</p>
-                                <div className="flex items-baseline gap-2 mt-1">
-                                    <p className="font-bold">₹{item.price}</p>
-                                    {item.originalPrice && (
-                                        <>
-                                            <p className="text-sm text-muted-foreground line-through">₹{item.originalPrice}</p>
-                                            <p className="text-sm font-semibold text-primary">
-                                                {Math.round(((item.originalPrice - item.price) / item.originalPrice) * 100)}% OFF
-                                            </p>
-                                        </>
-                                    )}
-                                </div>
-                            </div>
-                        </CarouselItem>
-                      )
-                    })}
-                    </CarouselContent>
-                </Carousel>
+                    {catIndex > 0 && <Separator className="my-4 h-2 bg-gray-100 -mx-4 w-[calc(100%+2rem)]" />}
+                    <div className="flex justify-between items-center">
+                        <h2 className="text-xl font-bold">{category.category} ({category.items.length})</h2>
+                        <ChevronDown />
+                    </div>
+                    {category.category === 'Buy 1 Get 1 Free' && (
+                        <p className="text-sm text-muted-foreground mt-1">1 out of 2 items will be made free. <a href="#" className="text-primary font-semibold">Learn More</a></p>
+                    )}
+                    
+                    {category.category === 'Buy 1 Get 1 Free' ? (
+                        <div className="mt-4 grid grid-cols-2 gap-4">
+                            {category.items.map((item) => <MenuGridItem key={item.id} item={item} />)}
+                        </div>
+                    ) : (
+                        <div className="divide-y">
+                            {category.items.map((item) => <MenuListItem key={item.id} item={item} />)}
+                        </div>
+                    )}
                 </div>
             ))}
         </div>
-      </main>
+      </div>
 
       <AddOnSheet item={selectedItem} open={isAddOnSheetOpen} onOpenChange={setIsAddOnSheetOpen} />
-
+      
       <Sheet open={isMenuSheetOpen} onOpenChange={setIsMenuSheetOpen}>
         <SheetTrigger asChild>
             <Button
@@ -511,39 +558,17 @@ function RestaurantDetailsPageComponent() {
         </SheetContent>
       </Sheet>
 
-
       {totalItems > 0 && (
         <footer className="fixed bottom-0 left-0 right-0 bg-white p-4 shadow-[0_-2px_4px_rgba(0,0,0,0.05)] z-30">
-            <div className="mb-3">
-                <Progress value={progress} className="h-2" />
-                <p className="text-xs text-center mt-1 font-medium text-gray-600">
-                {amountNeeded > 0 ? (
-                    `Add items worth ₹${amountNeeded.toFixed(2)} more to get free delivery!`
-                ) : (
-                    "Yay! You've unlocked free delivery!"
-                )}
-                </p>
+          <div className="flex justify-between items-center bg-primary text-white p-3 rounded-lg">
+            <div>
+              <p className="font-bold">{totalItems} {totalItems > 1 ? 'items' : 'item'}</p>
+              <p className="text-xs">Plus taxes</p>
             </div>
-          <Button 
-            className="w-full h-14 bg-primary text-primary-foreground p-3 rounded-xl shadow-2xl flex items-center justify-between"
-            onClick={() => router.push('/checkout')}
-            >
-              <div className="flex items-center gap-3">
-                  <div className="relative">
-                    <ShoppingBag className="h-6 w-6" />
-                    <span className="absolute -top-1 -right-2 bg-white text-primary text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center">
-                        {totalItems}
-                    </span>
-                  </div>
-                  <div>
-                    <p className="font-bold text-lg">₹{totalCost.toFixed(2)}</p>
-                    <p className="text-xs text-primary-foreground/80">Total bill</p>
-                  </div>
-              </div>
-              <div className="flex items-center font-bold">
-                  View Cart <ChevronRight className="w-4 h-4 ml-1" />
-              </div>
-          </Button>
+            <Button variant="ghost" className="text-white font-bold text-lg hover:bg-primary/80" onClick={() => router.push('/checkout')}>
+              View Cart
+            </Button>
+          </div>
         </footer>
       )}
     </div>
