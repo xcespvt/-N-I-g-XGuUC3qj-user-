@@ -431,7 +431,7 @@ function RestaurantDetailsPageComponent() {
                     </div>
                 </div>
             </div>
-             <main className="pb-24 relative z-10 -mt-16">
+             <main className="pb-4 relative z-10 -mt-16">
                  <div className="bg-white p-4 border-b rounded-b-2xl">
                     <div className="flex justify-between items-start">
                         <div>
@@ -445,13 +445,13 @@ function RestaurantDetailsPageComponent() {
                                 <span className={cn("font-bold", status.color)}>({status.text})</span>
                             </div>
                         </div>
-                        <div className="flex flex-col items-center">
+                        <button onClick={() => router.push(`/restaurant/${id}/reviews`)} className="flex flex-col items-center text-center">
                             <div className="flex items-center gap-1 bg-primary text-white px-2 py-0.5 rounded-full">
                                 <span className="font-bold">{restaurant.rating.toFixed(1)}</span>
                                 <Star className="h-3 w-3" />
                             </div>
-                            <p className="text-xs text-muted-foreground mt-1">{restaurant.reviews} ratings</p>
-                        </div>
+                            <p className="text-xs text-muted-foreground mt-1 underline">{restaurant.reviews} ratings</p>
+                        </button>
                     </div>
                  </div>
                  <div className="mt-4">
@@ -478,7 +478,7 @@ function RestaurantDetailsPageComponent() {
        )}
       
       <div ref={mainContentRef}>
-        <div className="mt-6 sticky top-0 bg-white z-10 py-2 shadow-sm">
+        <div className="sticky top-0 bg-white z-10 py-2 shadow-sm">
           <div className='px-4'>
             <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />

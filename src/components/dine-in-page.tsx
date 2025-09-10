@@ -15,6 +15,7 @@ import { CuisineCategories } from './cuisine-categories';
 import { useRouter } from 'next/navigation';
 import { TheatreCarousel } from './theatre-carousel';
 import { TaglineBanner } from './tagline-banner';
+import { OfferSection } from './offer-section';
 
 const Section = ({ title, children, restaurants }: { title: string; children: React.ReactNode; restaurants: Restaurant[] }) => (
     <div>
@@ -96,6 +97,8 @@ export function DineInPage({ restaurants, favorites, onFavoriteToggle }: DineInP
 
         <TaglineBanner />
         
+        <OfferSection />
+
         <div>
           <h2 className="text-2xl font-bold mb-4">Dine-in at the Movies</h2>
           <TheatreCarousel restaurants={movieTheatreRestaurants} />

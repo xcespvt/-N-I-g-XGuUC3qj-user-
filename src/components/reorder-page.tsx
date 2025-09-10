@@ -18,10 +18,11 @@ type ReorderPageProps = {
 export function ReorderPage({ restaurants }: ReorderPageProps) {
   const router = useRouter();
   
-  const ordersWithDetails = mockOrderHistory.map(order => {
+  const ordersWithDetails = mockOrderHistory.map((order, index) => {
     const restaurant = restaurants.find(r => r.name === order.restaurantName);
     return {
       ...order,
+      id: `order${index}`, // Add a unique ID for navigation
       restaurantDetails: restaurant,
     };
   }).filter(order => order.restaurantDetails);
@@ -88,7 +89,13 @@ export function ReorderPage({ restaurants }: ReorderPageProps) {
                 <Button className="flex-1 rounded-full" onClick={() => handleTrackOrder(order)}>Track Order</Button>
             )}
              {order.status === 'Completed' && (
-                <Button className="flex-1 rounded-full">Reorder</Button>
+                <>
+                    <Button variant="outline" className="flex-1 rounded-full border-primary text-primary" onClick={() => router.push(`/profile/rate-order?orderId=${order.id}`)}>
+                        <Star className="mr-2 h-4 w-4" />
+                        Rate Order
+                    </Button>
+                    <Button className="flex-1 rounded-full">Reorder</Button>
+                </>
             )}
              {order.status === 'Cancelled' && (
                 <Button className="flex-1 rounded-full" variant="secondary">Order Again</Button>
