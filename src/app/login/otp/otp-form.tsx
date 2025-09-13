@@ -1,6 +1,5 @@
 'use client';
 
-import { Suspense } from 'react';
 import { useState, useEffect, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ChevronLeft, MessageSquare, Smartphone } from 'lucide-react';
@@ -8,15 +7,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useLocalStorage } from '@/hooks/use-local-storage';
 
-export default function OtpPage() {
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <OtpForm />
-    </Suspense>
-  );
-}
-
-function OtpForm() {
+export default function OtpForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const phoneNumber = searchParams.get('phone') || '9973232032';
@@ -105,37 +96,52 @@ function OtpForm() {
               value={digit}
               onChange={(e) => handleOtpChange(index, e.target.value)}
               onKeyDown={(e) => handleKeyDown(index, e)}
-              className="aspect-square h-auto w-full max-w-14 rounded-lg border border-gray-200 bg-gray-50 text-center text-2xl font-bold focus:border-primary focus:ring-primary"
+              className="h-16 w-full max-w-[50px] rounded-lg border-2 border-gray-200 text-center text-2xl font-bold focus:border-primary focus:outline-none"
             />
           ))}
         </div>
-        
+
         <Button
-            className={cn(
-                "mt-8 h-12 w-full rounded-lg text-lg font-bold text-white",
-                isContinueDisabled ? "bg-gray-300" : "bg-primary hover:bg-primary/90"
-            )}
-            disabled={isContinueDisabled}
-            onClick={handleContinue}
-          >
-            Continue
+          className={cn(
+            'mt-8 w-full py-6 text-base font-medium',
+            isContinueDisabled ? 'bg-gray-300' : 'bg-primary hover:bg-primary/90'
+          )}
+          disabled={isContinueDisabled}
+          onClick={handleContinue}
+        >
+          Continue
         </Button>
 
-        <div className="mt-8 text-center text-sm text-gray-500">
-            Resend OTP in <span className="font-bold text-primary">{`0:${countdown.toString().padStart(2, '0')}`}</span>
+        <div className="mt-6 text-center text-sm text-gray-600">
+          Didn't receive the code?{' '}
+          <button
+            className={cn(
+              'font-medium text-primary',
+              isResendDisabled && 'text-gray-400 cursor-not-allowed'
+            )}
+            disabled={isResendDisabled}
+            onClick={handleResend}
+          >
+            Resend {isResendDisabled && `in ${countdown}s`}
+          </button>
         </div>
 
-        <div className="mt-4 flex justify-center gap-4">
-            <Button variant="outline" className="rounded-full border-gray-300" onClick={handleResend} disabled={isResendDisabled}>
-                <MessageSquare className="mr-2 h-4 w-4"/>
-                SMS
-            </Button>
-            <Button variant="outline" className="rounded-full border-gray-300" onClick={handleResend} disabled={isResendDisabled}>
-                <Smartphone className="mr-2 h-4 w-4" />
-                Whatsapp
-            </Button>
+        <div className="mt-8 flex items-center justify-center gap-4">
+          <div className="h-px flex-1 bg-gray-200"></div>
+          <span className="text-sm text-gray-500">Or verify with</span>
+          <div className="h-px flex-1 bg-gray-200"></div>
         </div>
 
+        <div className="mt-6 flex flex-col gap-4">
+          <Button variant="outline" className="w-full py-6 text-base font-medium">
+            <MessageSquare className="mr-2 h-5 w-5" />
+            SMS
+          </Button>
+          <Button variant="outline" className="w-full py-6 text-base font-medium">
+            <Smartphone className="mr-2 h-5 w-5" />
+            Call Me
+          </Button>
+        </div>
       </main>
     </div>
   );
