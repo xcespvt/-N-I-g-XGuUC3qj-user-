@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils';
 import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
 import type { Restaurant } from "@/lib/types";
+import { IMAGES, getRandomRestaurantImage } from '@/lib/image-constants';
 
 type TheatreCarouselProps = {
     restaurants: Restaurant[];
@@ -19,6 +20,21 @@ export function TheatreCarousel({ restaurants }: TheatreCarouselProps) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [scrollSnaps, setScrollSnaps] = useState<number[]>([]);
   const router = useRouter();
+
+  // Get appropriate restaurant/cinema image
+  const getTheatreImage = (restaurant: Restaurant) => {
+    // For movie theatres, use restaurant interior images for ambiance
+    const restaurantImages = [
+      IMAGES.RESTAURANT.MODERN_INTERIOR,
+      IMAGES.RESTAURANT.COZY_CAFE,
+      IMAGES.RESTAURANT.FINE_DINING,
+      IMAGES.RESTAURANT.OUTDOOR_PATIO
+    ];
+    
+    // Use restaurant ID to consistently assign the same image
+    const imageIndex = parseInt(restaurant.id) % restaurantImages.length;
+    return restaurantImages[imageIndex] || getRandomRestaurantImage();
+  };
 
   const updateDots = useCallback((api: EmblaCarouselType) => {
     setScrollSnaps(api.scrollSnapList());
@@ -53,7 +69,7 @@ export function TheatreCarousel({ restaurants }: TheatreCarouselProps) {
                             onClick={() => handleCardClick(experience.id)}
                         >
                             <Image
-                                src={experience.image}
+                                src={getTheatreImage(experience)}
                                 alt={experience.name}
                                 fill
                                 className="object-cover transition-transform duration-500 group-hover:scale-110"

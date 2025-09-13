@@ -204,7 +204,6 @@ const BookTableSheet = ({ open, onOpenChange, restaurantId, restaurantName }: { 
 
 const TableSelectionSheet = ({ open, onOpenChange, restaurantId }: { open: boolean, onOpenChange: (open: boolean) => void, restaurantId: string }) => {
     const [selectedTable, setSelectedTable] = useState<string | null>(null);
-    const [selectedSeries, setSelectedSeries] = useState<string>('All');
     const router = useRouter();
 
     const handleConfirmTable = () => {
@@ -213,62 +212,46 @@ const TableSelectionSheet = ({ open, onOpenChange, restaurantId }: { open: boole
         }
     };
     
-    const tableSeries = ['All', ...new Set(tables.map(t => t.number.charAt(0)))];
-    const filteredTables = selectedSeries === 'All' 
-        ? tables 
-        : tables.filter(t => t.number.startsWith(selectedSeries));
-
     return (
         <Sheet open={open} onOpenChange={onOpenChange}>
-            <SheetContent side="bottom" className="rounded-t-2xl h-[60vh] flex flex-col p-0 bg-gray-50">
-                <SheetHeader className="p-4 border-b bg-white">
+            <SheetContent side="bottom" className="rounded-t-2xl h-[60vh] flex flex-col p-0">
+                <SheetHeader className="p-4 border-b">
                     <SheetTitle>Select Your Seat</SheetTitle>
                 </SheetHeader>
-                <div className="px-4 pt-4 bg-white">
-                    <h3 className="text-sm font-semibold mb-2 text-gray-600">Select Row</h3>
-                    <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
-                        {tableSeries.map(series => (
-                            <Button
-                                key={series}
-                                variant={selectedSeries === series ? 'default' : 'outline'}
-                                className={cn(
-                                    "rounded-full h-9",
-                                    selectedSeries === series
-                                    ? "bg-primary text-white"
-                                    : "bg-white border-gray-300 text-gray-700"
-                                )}
-                                onClick={() => setSelectedSeries(series)}
-                            >
-                                {series}
-                            </Button>
-                        ))}
-                    </div>
-                </div>
-                <div className="flex-1 overflow-y-auto p-4">
-                    <div className="grid grid-cols-1 gap-3">
-                        {filteredTables.map(table => (
-                            <button
-                                key={table.id}
-                                onClick={() => setSelectedTable(table.id)}
-                                className={cn(
-                                    "w-full flex items-center justify-between p-4 rounded-xl border-2 text-left transition-all bg-white",
-                                    selectedTable === table.id 
-                                        ? "ring-2 ring-offset-2 ring-primary border-primary bg-primary/5"
-                                        : "border-gray-200"
-                                )}
-                            >
-                                <div className="flex items-center gap-3">
-                                    <Armchair className="h-6 w-6 text-primary" />
-                                    <div>
-                                        <p className="font-bold text-gray-800">Seat {table.number}</p>
-                                        <p className="text-sm text-muted-foreground">{table.type}</p>
-                                    </div>
+                <div className="flex-1 overflow-y-auto py-4 space-y-4 px-4">
+                    {tables.map(table => (
+                        <button
+                            key={table.id}
+                            disabled={table.status !== 'available'}
+                            onClick={() => setSelectedTable(table.id)}
+                            className={cn(
+                                "w-full flex items-center justify-between p-4 rounded-xl border-2 text-left transition-all",
+                                table.status === 'available' && "bg-green-50 border-green-200 text-green-800",
+                                table.status === 'occupied' && "bg-red-50 border-red-200 text-red-800 opacity-60",
+                                table.status === 'unavailable' && "bg-gray-100 border-gray-200 text-gray-500 opacity-60",
+                                selectedTable === table.id && "ring-2 ring-offset-2 ring-primary border-primary"
+                            )}
+                        >
+                            <div className="flex items-center gap-3">
+                                <Armchair className="h-6 w-6" />
+                                <div>
+                                    <p className="font-bold">Seat {table.number}</p>
+                                    <p className="text-sm">{table.type}</p>
                                 </div>
-                            </button>
-                        ))}
-                    </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <div className={cn(
+                                    "w-3 h-3 rounded-full",
+                                    table.status === 'available' && "bg-green-500",
+                                    table.status === 'occupied' && "bg-red-500",
+                                    table.status === 'unavailable' && "bg-gray-400"
+                                )}/>
+                                <span className="text-sm font-semibold capitalize">{table.status}</span>
+                            </div>
+                        </button>
+                    ))}
                 </div>
-                <div className="p-4 border-t bg-white">
+                <div className="p-4 border-t">
                     <Button 
                         className="w-full h-12 text-lg rounded-full"
                         disabled={!selectedTable}
@@ -515,13 +498,13 @@ function RestaurantBookingPageComponent() {
 
       <footer className="sticky bottom-0 bg-white p-4 border-t flex items-center gap-3 z-20">
         {isMovieTheatre ? (
-            <Button className="h-14 flex-1 rounded-full text-lg font-bold bg-primary hover:bg-primary/90" onClick={() => setIsTableSheetOpen(true)}>
+            <Button variant="outline" className="h-14 flex-1 rounded-full text-lg font-bold text-green-600 border-green-600 hover:bg-green-50 hover:text-green-700" onClick={() => setIsTableSheetOpen(true)}>
                 <Utensils className="h-5 w-5 mr-2" />
                 Dine in
             </Button>
         ) : (
             <>
-                <Button variant="outline" className="h-14 flex-1 rounded-full text-lg font-bold text-primary border-primary hover:bg-primary/5 hover:text-primary" onClick={() => setIsTableSheetOpen(true)}>
+                <Button variant="outline" className="h-14 flex-1 rounded-full text-lg font-bold text-green-600 border-green-600 hover:bg-green-50 hover:text-green-700" onClick={() => setIsTableSheetOpen(true)}>
                     <Utensils className="h-5 w-5 mr-2" />
                     Dine in
                 </Button>

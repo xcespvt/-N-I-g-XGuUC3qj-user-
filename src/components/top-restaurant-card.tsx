@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Bookmark, Star, Heart } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import { IMAGES, getRandomFoodImage } from '@/lib/image-constants';
 
 type TopRestaurantCardProps = {
   restaurant: Restaurant;
@@ -21,10 +23,30 @@ export function TopRestaurantCard({ restaurant, isFavorite, onFavoriteToggle }: 
         router.push(page);
     };
 
+    // Get appropriate image based on cuisine type
+    const getRestaurantImage = (restaurant: Restaurant) => {
+        const cuisine = restaurant.cuisine.toLowerCase();
+        if (cuisine.includes('pizza')) return IMAGES.FOOD.PIZZA_MARGHERITA;
+        if (cuisine.includes('burger')) return IMAGES.FOOD.BURGER_GOURMET;
+        if (cuisine.includes('pasta') || cuisine.includes('italian')) return IMAGES.FOOD.PASTA_CARBONARA;
+        if (cuisine.includes('sushi') || cuisine.includes('japanese')) return IMAGES.FOOD.SUSHI_PLATTER;
+        if (cuisine.includes('mexican') || cuisine.includes('taco')) return IMAGES.FOOD.TACOS_MEXICAN;
+        if (cuisine.includes('dessert') || cuisine.includes('cake')) return IMAGES.FOOD.CHOCOLATE_CAKE;
+        if (cuisine.includes('coffee') || cuisine.includes('cafe')) return IMAGES.FOOD.COFFEE_LATTE_ART;
+        if (cuisine.includes('smoothie') || cuisine.includes('juice')) return IMAGES.FOOD.FRESH_SMOOTHIE;
+        return getRandomFoodImage(); // fallback to random food image
+    };
+
   return (
     <div className="w-full min-w-0 cursor-pointer group" onClick={handleClick}>
       <div className="relative overflow-hidden rounded-xl aspect-[3/4]">
-        <div className="absolute inset-0 bg-gray-200 rounded-xl" />
+        <Image
+          src={getRestaurantImage(restaurant)}
+          alt={restaurant.name}
+          fill
+          className="object-cover transition-transform duration-300 group-hover:scale-105"
+          sizes="(max-width: 640px) 40vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 20vw"
+        />
         
         <div className="absolute top-2 left-2">
              <Button

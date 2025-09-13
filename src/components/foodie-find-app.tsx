@@ -18,6 +18,11 @@ import { useRouter } from 'next/navigation';
 import { LocationPermissionDialog } from './location-permission-dialog';
 import { Carousel, CarouselContent, CarouselItem } from './ui/carousel';
 import { TaglineBanner } from './tagline-banner';
+import { cn } from '@/lib/utils';
+import { Lock } from 'lucide-react';
+import { OfferSection } from './offer-section';
+import Image from 'next/image';
+import { IMAGES, getRandomFoodImage, getBrandImage } from '@/lib/image-constants';
 
 const Section = ({ title, children, restaurants }: { title: string; children: (restaurant: Restaurant) => React.ReactNode; restaurants: Restaurant[] }) => (
     <div>
@@ -38,12 +43,24 @@ const Section = ({ title, children, restaurants }: { title: string; children: (r
 
 const BrandCard = ({ restaurant }: { restaurant: Restaurant }) => {
     const router = useRouter();
+    
+    // Get appropriate brand image based on restaurant name
+    const getRestaurantBrandImage = (restaurant: Restaurant) => {
+        return getBrandImage(restaurant.name);
+    };
+    
     return (
         <button 
             onClick={() => router.push(`/restaurant/${restaurant.id}`)}
-            className="w-full h-24 flex items-center justify-center p-2 rounded-xl bg-gray-100 hover:bg-gray-200 transition-colors"
+            className="w-full h-24 relative overflow-hidden rounded-xl group transition-transform duration-300 hover:scale-105"
         >
-            <span className="font-bold text-[10px] text-gray-800 text-center leading-tight">{restaurant.name}</span>
+            <Image
+                src={getRestaurantBrandImage(restaurant)}
+                alt={restaurant.name}
+                fill
+                className="object-cover"
+                sizes="(max-width: 640px) 20vw, (max-width: 768px) 16vw, 14vw"
+            />
         </button>
     )
 };
@@ -60,6 +77,7 @@ export default function FoodieFindApp() {
   const router = useRouter();
   const [isFirstLogin, setIsFirstLogin] = useLocalStorage('is-first-login', false);
   const [showLocationDialog, setShowLocationDialog] = useState(false);
+  const [showHomemadeLocked, setShowHomemadeLocked] = useState(false);
   const [filters, setFilters] = useLocalStorage<Filters>('restaurant-filters', {
     cuisine: 'all',
     price: 'all',
@@ -80,14 +98,19 @@ export default function FoodieFindApp() {
     }
   }, [isFirstLogin, setIsFirstLogin]);
   
-  useEffect(() => {
-    // Set order type based on the active tab
-    if (activeTab === 'Dine-in') {
-      setOrderType('dine-in');
+  const handleTabChange = (tab: string) => {
+    if (tab === 'Homemade') {
+      setShowHomemadeLocked(true);
+      setTimeout(() => setShowHomemadeLocked(false), 2000);
     } else {
-      setOrderType('delivery');
+      setActiveTab(tab);
+      if (tab === 'Dine-in') {
+        setOrderType('dine-in');
+      } else {
+        setOrderType('delivery');
+      }
     }
-  }, [activeTab, setOrderType]);
+  };
 
   const handleFavoriteToggle = (id: string) => {
     setFavorites((prevFavorites) =>
@@ -125,7 +148,9 @@ export default function FoodieFindApp() {
   }, [filteredRestaurants]);
 
   const featuredBrands = useMemo(() => {
-    return restaurants.filter(r => r.rating > 4.5 && !hiddenRestaurants.includes(r.id)).slice(0, 10);
+    // Show the 6 main brand restaurants specifically
+    const brandRestaurantIds = ['1', '2', '3', '4', '5', '6']; // KFC, Dominos, McDonalds, Burger King, Starbucks, Wendys
+    return restaurants.filter(r => brandRestaurantIds.includes(r.id) && !hiddenRestaurants.includes(r.id));
   }, [restaurants, hiddenRestaurants]);
 
 
@@ -138,9 +163,9 @@ export default function FoodieFindApp() {
         subAddress={subAddress}
         setAddress={setAddress}
         onAiSearchClick={() => router.push('/ai-search')}
-        showPromoBanner={activeTab !== 'Dine-in'}
+        showPromoBanner={activeTab !== 'Dine-in' && activeTab !== 'Reorder'}
       />
-      <main className="flex-1 pb-20">
+      <main className={cn("flex-1 pb-20 transition-all duration-300", showHomemadeLocked && "blur-sm pointer-events-none")}>
         <div className="px-4">
           {activeTab === 'Food' && (
             <>
@@ -153,6 +178,9 @@ export default function FoodieFindApp() {
                 />
               </div>
               <TaglineBanner />
+              <div className="mt-8">
+                <OfferSection />
+              </div>
               <div className="mt-8">
                 <Section title="Featured Brands" restaurants={featuredBrands}>
                     {(restaurant: Restaurant) => <BrandCard restaurant={restaurant} />}
@@ -170,29 +198,7 @@ export default function FoodieFindApp() {
               </div>
             </>
           )}
-          {activeTab === 'Homemade' && (
-            <>
-               <CuisineCategories />
-               <div className="mt-8">
-                <TopRestaurants 
-                  restaurants={topRatedRestaurants.filter(r => r.tags?.includes('Homemade'))} 
-                  favorites={favorites}
-                  onFavoriteToggle={handleFavoriteToggle}
-                />
-              </div>
-              <div className="mt-8">
-                <AllHomemade 
-                  restaurants={filteredRestaurants} 
-                  favorites={favorites}
-                  onFavoriteToggle={handleFavoriteToggle}
-                  offers={offers}
-                  filters={filters}
-                  onFilterChange={setFilters}
-                />
-              </div>
-            </>
-          )}
-           {activeTab === 'Dine-in' && (
+          {activeTab === 'Dine-in' && (
             <DineInPage 
               restaurants={filteredRestaurants}
               favorites={favorites}
@@ -204,12 +210,20 @@ export default function FoodieFindApp() {
           )}
         </div>
       </main>
+      {showHomemadeLocked && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+            <div className="bg-black/70 text-white p-6 rounded-2xl flex flex-col items-center gap-4 animate-in fade-in-0 zoom-in-95">
+                <Lock className="h-10 w-10" />
+                <p className="font-bold text-lg">This section is currently locked</p>
+            </div>
+        </div>
+      )}
       <footer className="bg-white py-6 mt-8">
         <div className="container mx-auto text-center text-muted-foreground px-4">
           <p>&copy; 2024 Foodie Find. All rights reserved.</p>
         </div>
       </footer>
-      <BottomNavBar activeItem={activeTab} setActiveItem={setActiveTab} />
+      <BottomNavBar activeItem={activeTab} setActiveItem={handleTabChange} />
       <LocationPermissionDialog open={showLocationDialog} onOpenChange={setShowLocationDialog} />
     </div>
   );

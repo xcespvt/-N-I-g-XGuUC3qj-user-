@@ -1,12 +1,13 @@
 
 import type { Restaurant, Offer, Order, Review, WalletTransaction } from './types';
+import { BRAND_IMAGES, FOOD_IMAGES } from './image-constants';
 
 export const restaurants: Restaurant[] = [
   {
     id: '1',
-    name: 'Royal Spice',
-    image: 'https://placehold.co/600x400.png',
-    cuisine: 'North Indian, Mughlai',
+    name: 'KFC',
+    image: BRAND_IMAGES.KFC,
+    cuisine: 'Fried Chicken, Fast Food',
     rating: 4.7,
     deliveryTime: 30,
     priceRange: 'moderate',
@@ -20,8 +21,8 @@ export const restaurants: Restaurant[] = [
   },
   {
     id: '2',
-    name: 'Pizza Heaven',
-    image: 'https://placehold.co/600x400.png',
+    name: 'Dominos Pizza',
+    image: BRAND_IMAGES.DOMINOS,
     cuisine: 'Pizza, Italian',
     rating: 4.4,
     deliveryTime: 25,
@@ -35,9 +36,9 @@ export const restaurants: Restaurant[] = [
   },
   {
     id: '3',
-    name: 'Wok & Roll',
-    image: 'https://placehold.co/600x400.png',
-    cuisine: 'Chinese, Thai',
+    name: 'McDonalds',
+    image: BRAND_IMAGES.MCDONALDS,
+    cuisine: 'Burgers, Fast Food',
     rating: 4.6,
     deliveryTime: 45,
     priceRange: 'moderate',
@@ -49,9 +50,9 @@ export const restaurants: Restaurant[] = [
   },
   {
     id: '4',
-    name: 'Burger Barn',
-    image: 'https://placehold.co/600x400.png',
-    cuisine: 'American',
+    name: 'Burger King',
+    image: BRAND_IMAGES.BURGERKING,
+    cuisine: 'Burgers, American',
     rating: 4.0,
     deliveryTime: 20,
     priceRange: 'cheap',
@@ -63,9 +64,9 @@ export const restaurants: Restaurant[] = [
   },
   {
     id: '5',
-    name: 'Curry House',
-    image: 'https://placehold.co/600x400.png',
-    cuisine: 'Indian',
+    name: 'Starbucks Coffee',
+    image: BRAND_IMAGES.STARBUCKS,
+    cuisine: 'Coffee, Beverages',
     rating: 4.6,
     deliveryTime: 35,
     priceRange: 'moderate',
@@ -78,9 +79,9 @@ export const restaurants: Restaurant[] = [
   },
   {
     id: '6',
-    name: 'Peking Duck',
-    image: 'https://placehold.co/600x400.png',
-    cuisine: 'Chinese',
+    name: 'Wendys',
+    image: BRAND_IMAGES.WENDYS,
+    cuisine: 'Burgers, Fast Food',
     rating: 4.3,
     deliveryTime: 50,
     priceRange: 'expensive',
@@ -757,28 +758,28 @@ export const restaurants: Restaurant[] = [
 
 export const offers: Offer[] = [
     {
-        restaurant: "La Pino'z Pizza",
+        restaurant: "Domino's Pizza",
         title: "Get flat ₹125 OFF*",
         subtitle: "on mouth-watering treats",
-        image: "https://placehold.co/400x300.png",
-        logo: "https://placehold.co/50x50.png",
+        image: FOOD_IMAGES.PIZZA_MARGHERITA,
+        logo: BRAND_IMAGES.DOMINOS,
         hint: "pizza cheese"
     },
     {
-        restaurant: "La Pino'z Pizza",
-        title: "Get flat ₹125 OFF*",
-        subtitle: "on mouth-watering treats",
-        image: "https://placehold.co/400x300.png",
-        logo: "https://placehold.co/50x50.png",
-        hint: "pizza cheese"
+        restaurant: "Burger King",
+        title: "Free Whopper",
+        subtitle: "on orders above ₹499",
+        image: FOOD_IMAGES.BURGER_GOURMET,
+        logo: BRAND_IMAGES.BURGERKING,
+        hint: "burger"
     },
     {
-        restaurant: "La Pino'z Pizza",
-        title: "Get flat ₹125 OFF*",
-        subtitle: "on mouth-watering treats",
-        image: "https://placehold.co/400x300.png",
-        logo: "https://placehold.co/50x50.png",
-        hint: "pizza cheese"
+        restaurant: "Starbucks Coffee",
+        title: "Buy 1 Get 1 Free",
+        subtitle: "on selected beverages",
+        image: FOOD_IMAGES.COFFEE_LATTE_ART,
+        logo: BRAND_IMAGES.STARBUCKS,
+        hint: "coffee latte"
     }
 ];
 

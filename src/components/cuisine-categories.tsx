@@ -8,20 +8,19 @@ import { Carousel, CarouselContent, CarouselItem } from "./ui/carousel"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "./ui/sheet";
 
 const cuisines = [
-  { name: "North Indian", image: "https://placehold.co/150x150.png", hint: "north indian food" },
-  { name: "Biryani", image: "https://placehold.co/150x150.png", hint: "biryani food" },
-  { name: "Chinese", image: "https://placehold.co/150x150.png", hint: "chinese food" },
-  { name: "South Indian", image: "https://placehold.co/150x150.png", hint: "south indian food" },
-  { name: "Pizza", image: "https://placehold.co/150x150.png", hint: "pizza" },
-  { name: "Rolls", image: "https://placehold.co/150x150.png", hint: "food roll" },
-  { name: "Burger", image: "https://placehold.co/150x150.png", hint: "burger" },
-  { name: "Thali", image: "https://placehold.co/150x150.png", hint: "thali food" },
-  { name: "Sandwich", image: "https://placehold.co/150x150.png", hint: "sandwich" },
-  { name: "Desserts", image: "https://placehold.co/150x150.png", hint: "dessert" },
-  { name: "Healthy", image: "https://placehold.co/150x150.png", hint: "healthy food" },
-  { name: "Pasta", image: "https://placehold.co/150x150.png", hint: "pasta" },
+  { name: "North Indian", image: "/images/burger-gourmet.jpg", hint: "north indian food" },
+  { name: "Biryani", image: "/images/sushi-platter.jpg", hint: "biryani food" },
+  { name: "Chinese", image: "/images/sushi-platter.jpg", hint: "chinese food" },
+  { name: "South Indian", image: "/images/pasta-carbonara.jpg", hint: "south indian food" },
+  { name: "Pizza", image: "/images/pizza-margherita.jpg", hint: "pizza" },
+  { name: "Rolls", image: "/images/tacos-mexican.jpg", hint: "food roll" },
+  { name: "Burger", image: "/images/burger-gourmet.jpg", hint: "burger" },
+  { name: "Thali", image: "/images/sushi-platter.jpg", hint: "thali food" },
+  { name: "Sandwich", image: "/images/burger-gourmet.jpg", hint: "sandwich" },
+  { name: "Desserts", image: "/images/chocolate-cake.jpg", hint: "dessert" },
+  { name: "Healthy", image: "/images/fresh-smoothie.jpg", hint: "healthy food" },
+  { name: "Pasta", image: "/images/pasta-carbonara.jpg", hint: "pasta" },
 ]
-
 export function CuisineCategories() {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const carouselCuisines = cuisines.slice(0, 7);
