@@ -18,6 +18,11 @@ import { useRouter } from 'next/navigation';
 import { LocationPermissionDialog } from './location-permission-dialog';
 import { Carousel, CarouselContent, CarouselItem } from './ui/carousel';
 import { TaglineBanner } from './tagline-banner';
+import { cn } from '@/lib/utils';
+import { Lock } from 'lucide-react';
+import { OfferSection } from './offer-section';
+import Image from 'next/image';
+import { IMAGES, getRandomFoodImage, getBrandImage } from '@/lib/image-constants';
 
 const Section = ({ title, children, restaurants }: { title: string; children: (restaurant: Restaurant) => React.ReactNode; restaurants: Restaurant[] }) => (
     <div>
