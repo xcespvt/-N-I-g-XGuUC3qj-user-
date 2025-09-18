@@ -13,6 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useLocalStorage } from '@/hooks/use-local-storage';
+import { IMAGES, getRandomFoodImage } from '@/lib/image-constants';
 
 type RestaurantCardListProps = {
   restaurant: Restaurant;
@@ -27,6 +28,20 @@ export function RestaurantCardList({ restaurant, isFavorite, onFavoriteToggle, o
   const router = useRouter();
   const [, setOrderType] = useLocalStorage<'delivery' | 'dine-in' | 'booking'>('order-type', 'delivery');
 
+  // Get appropriate image based on cuisine type
+  const getRestaurantImage = (restaurant: Restaurant) => {
+    const cuisine = restaurant.cuisine.toLowerCase();
+    if (cuisine.includes('pizza')) return IMAGES.FOOD.PIZZA_MARGHERITA;
+    if (cuisine.includes('burger')) return IMAGES.FOOD.BURGER_GOURMET;
+    if (cuisine.includes('pasta') || cuisine.includes('italian')) return IMAGES.FOOD.PASTA_CARBONARA;
+    if (cuisine.includes('sushi') || cuisine.includes('japanese')) return IMAGES.FOOD.SUSHI_PLATTER;
+    if (cuisine.includes('mexican') || cuisine.includes('taco')) return IMAGES.FOOD.TACOS_MEXICAN;
+    if (cuisine.includes('dessert') || cuisine.includes('cake')) return IMAGES.FOOD.CHOCOLATE_CAKE;
+    if (cuisine.includes('coffee') || cuisine.includes('cafe')) return IMAGES.FOOD.COFFEE_LATTE_ART;
+    if (cuisine.includes('smoothie') || cuisine.includes('juice')) return IMAGES.FOOD.FRESH_SMOOTHIE;
+    if (cuisine.includes('north indian') || cuisine.includes('mughlai')) return IMAGES.FOOD.BURGER_GOURMET; // Using burger as placeholder for Indian food
+    return getRandomFoodImage(); // fallback to random food image
+  };
 
   const handleClick = () => {
     if (onClick) {
@@ -52,7 +67,7 @@ export function RestaurantCardList({ restaurant, isFavorite, onFavoriteToggle, o
         <div className="flex gap-4">
             <div className="relative w-28 h-28 flex-shrink-0">
                 <Image
-                    src={restaurant.image}
+                    src={getRestaurantImage(restaurant)}
                     alt={restaurant.name}
                     width={200}
                     height={200}

@@ -3,31 +3,32 @@
 import Image from "next/image"
 import { Button } from "./ui/button"
 import { Carousel, CarouselContent, CarouselItem } from "./ui/carousel"
+import { BRAND_IMAGES, FOOD_IMAGES } from "@/lib/image-constants"
 
 const offers = [
     {
-        restaurant: "La Pino'z Pizza",
+        restaurant: "Domino's Pizza",
         title: "Get flat ₹125 OFF*",
         subtitle: "on mouth-watering treats",
-        image: "https://placehold.co/400x300.png",
-        logo: "https://placehold.co/50x50.png",
+        image: FOOD_IMAGES.PIZZA_MARGHERITA,
+        logo: BRAND_IMAGES.DOMINOS,
         hint: "pizza cheese"
     },
     {
         restaurant: "Burger King",
         title: "Free Whopper",
         subtitle: "on orders above ₹499",
-        image: "https://placehold.co/400x300.png",
-        logo: "https://placehold.co/50x50.png",
+        image: FOOD_IMAGES.BURGER_GOURMET,
+        logo: BRAND_IMAGES.BURGERKING,
         hint: "burger"
     },
     {
-        restaurant: "The Good Bowl",
+        restaurant: "KFC",
         title: "Meals from ₹179",
         subtitle: "on selected bowls",
-        image: "https://placehold.co/400x300.png",
-        logo: "https://placehold.co/50x50.png",
-        hint: "rice bowl"
+        image: FOOD_IMAGES.BURGER_GOURMET,
+        logo: BRAND_IMAGES.KFC,
+        hint: "fried chicken"
     }
 ]
 

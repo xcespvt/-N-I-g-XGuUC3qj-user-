@@ -15,9 +15,8 @@ import { CuisineCategories } from './cuisine-categories';
 import { useRouter } from 'next/navigation';
 import { TheatreCarousel } from './theatre-carousel';
 import { TaglineBanner } from './tagline-banner';
-import { OfferSection } from './offer-section';
 
-const Section = ({ title, children, restaurants }: { title: string; children: React.ReactNode; restaurants: Restaurant[] }) => (
+const Section = ({ title, children, restaurants }: { title: string; children: (restaurant: Restaurant) => React.ReactNode; restaurants: Restaurant[] }) => (
     <div>
         <div className="flex justify-between items-center mb-4">
             <h2 className="text-2xl font-bold">{title}</h2>
@@ -36,12 +35,24 @@ const Section = ({ title, children, restaurants }: { title: string; children: Re
 
 const BrandCard = ({ restaurant }: { restaurant: Restaurant }) => {
     const router = useRouter();
+    
+    // Get appropriate brand image based on restaurant name
+    const getRestaurantBrandImage = (restaurant: Restaurant) => {
+        return getBrandImage(restaurant.name);
+    };
+    
     return (
         <button 
             onClick={() => router.push(`/restaurant/${restaurant.id}`)}
-            className="w-full h-24 flex items-center justify-center p-4 rounded-xl bg-gray-100 hover:bg-gray-200 transition-colors"
+            className="w-full h-24 relative overflow-hidden rounded-xl group transition-transform duration-300 hover:scale-105"
         >
-            <span className="font-bold text-sm text-gray-800 text-center">{restaurant.name}</span>
+            <Image
+                src={getRestaurantBrandImage(restaurant)}
+                alt={restaurant.name}
+                fill
+                className="object-cover"
+                sizes="(max-width: 640px) 20vw, (max-width: 768px) 16vw, 14vw"
+            />
         </button>
     )
 };
@@ -84,7 +95,9 @@ export function DineInPage({ restaurants, favorites, onFavoriteToggle }: DineInP
   }
 
   const allDineInRestaurants = restaurants.filter(r => r.tags?.includes('Dine-in Special') && !hiddenRestaurants.includes(r.id));
-  const featuredBrands = restaurants.filter(r => r.rating > 4.5 && !hiddenRestaurants.includes(r.id)).slice(0, 10);
+  // Show the 6 main brand restaurants specifically
+  const brandRestaurantIds = ['1', '2', '3', '4', '5', '6']; // KFC, Dominos, McDonalds, Burger King, Starbucks, Wendys
+  const featuredBrands = restaurants.filter(r => brandRestaurantIds.includes(r.id) && !hiddenRestaurants.includes(r.id));
   const movieTheatreRestaurants = restaurants.filter(r => r.tags?.includes('Movie Theatre'));
 
 

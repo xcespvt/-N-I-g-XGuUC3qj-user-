@@ -1,6 +1,6 @@
-
 'use client';
 
+import { Suspense } from 'react';
 import { useState, useEffect, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ChevronLeft, MessageSquare, Smartphone } from 'lucide-react';
@@ -9,11 +9,18 @@ import { cn } from '@/lib/utils';
 import { useLocalStorage } from '@/hooks/use-local-storage';
 
 export default function OtpPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <OtpForm />
+    </Suspense>
+  );
+}
+
+function OtpForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const phoneNumber = searchParams.get('phone') || '9973232032';
   const [, setIsFirstLogin] = useLocalStorage('is-first-login', false);
-
 
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [countdown, setCountdown] = useState(30);
@@ -92,7 +99,7 @@ export default function OtpPage() {
           {otp.map((digit, index) => (
             <input
               key={index}
-              ref={el => inputRefs.current[index] = el}
+              ref={el => { inputRefs.current[index] = el; }}
               type="tel"
               maxLength={1}
               value={digit}

@@ -23,7 +23,7 @@ export default function LoginPage() {
   return (
     <div className="relative h-screen w-full overflow-hidden">
       <Image
-        src="https://placehold.co/1080x1920.png"
+        src="/images/pexels-janetrangdoan-1099680.jpg"
         alt="Background image of a cup of tea"
         fill
         className="object-cover"
