@@ -81,7 +81,7 @@ export default function LoginPage() {
           </p>
           <Button
             className={cn(
-                "mt-4 h-12 w-full rounded-lg text-lg font-bold text-white",
+                "mt-4 h-12 w-full rounded-xl text-lg font-bold text-white",
                 isContinueDisabled ? "bg-gray-300" : "bg-primary hover:bg-primary/90"
             )}
             disabled={isContinueDisabled}
